@@ -1,0 +1,67 @@
+name: integration
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  integration:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cargo build (non-release)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --manifest-path test/Cargo.toml
+
+      # ubuntu
+      - name: (Ubuntu) Pre-compress test
+        if: startsWith(matrix.os,'ubuntu')
+        run: |
+          ls -la test/target/debug/my_executable
+          test/target/debug/my_executable
+
+      - name: (Ubuntu) Compress
+        if: startsWith(matrix.os,'ubuntu')
+        uses: ./
+        with:
+          commands: -9
+          options: -v -o new_executable
+          file: test/target/debug/my_executable
+
+      - name: (Ubuntu) Post-compress test
+        if: startsWith(matrix.os,'ubuntu')
+        run: |
+          ls -la ./new_executable
+          ./new_executable
+
+      # windows
+      - name: (Windows) Pre-compress test
+        if: startsWith(matrix.os,'windows')
+        run: |
+          dir test/target/debug/my_executable.exe
+          test/target/debug/my_executable.exe
+
+      - name: (Windows) Compress
+        if: startsWith(matrix.os,'windows')
+        uses: ./
+        with:
+          commands: -9
+          options: -v -o new_executable.exe
+          file: test/target/debug/my_executable.exe
+
+      - name: (Windows) Post-compress test
+        if: startsWith(matrix.os,'windows')
+        run: |
+          dir ./new_executable.exe
+          ./new_executable.exe

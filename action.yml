@@ -1,6 +1,34 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Compress'
+author: 'Clowd Haus, LLC'
+description: 'Github action to compress 🗜️ executables'
+branding:
+  icon: 'minimize-2'
+  color: 'yellow'
+inputs:
+  commands:
+    description: >
+      Commands:
+        -1     compress faster                   -9    compress better
+        -d     decompress                        -l    list compressed file
+        -t     test compressed file              -V    display version number
+        -h     give more help                    -L    display software license
+    required: false
+  options:
+    description: >
+      Options:
+        -q     be quiet                          -v    be verbose
+        -oFILE write output to 'FILE'
+        -f     force compression of suspicious files
+        -k     keep backup files
+    required: false
+  file:
+    description: >
+      Executable to (de)compress
+    required: true
+outputs:
+  output:
+    description: 'Output returned from command execution'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

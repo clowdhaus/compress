@@ -10,60 +10,72 @@
   <img src="https://snyk.io/test/github/clowdhaus/compress/master/badge.svg" alt="Known Vulnerabilities">
 </p>
 
-GitHub action to run `upx` on specified executables and binaries.
+GitHub action to compress executables using `upx`.
 
 ## Usage
+
+`upx` man page for reference:
+
+```
+Usage: upx [-123456789dlthVL] [-qvfk] [-o file] file..
+
+Commands:
+  -1     compress faster                   -9    compress better
+  -d     decompress                        -l    list compressed file
+  -t     test compressed file              -V    display version number
+  -h     give more help                    -L    display software license
+Options:
+  -q     be quiet                          -v    be verbose
+  -oFILE write output to 'FILE'
+  -f     force compression of suspicious files
+  -k     keep backup files
+file..   executables to (de)compress
+```
 
 ```yml
 - uses: clowdhaus/compress@v0.1
   with:
-    # The CloudFront distribution ID
-    # Required: true
-    distribution-id: ''
+    # Commands [-123456789dlthVL]
+    commands: ''
 
-    # A value that you specify to uniquely identify an invalidation request. CloudFront uses the
-    # value to prevent you from accidentally resubmitting an identical request. Whenever you
-    # create a new invalidation request, you must specify a new value for `caller-reference`
-    # and change other values in the request as applicable.
-    # Default: git SHA that triggered the workflow
-    caller-reference: ''
+    # Options [-qvfk] [-o file]
+    options: ''
 
-    # Path patrerns that contains information about the objects that you want to invalidate.
-    # For more information, see
-    # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html
-    # Note: Use the yaml mutiline pipe | to specify multiple paths, one on each line
-    # Default: '/*' (invalidates entire distribution)
-    paths: ''
+    # Executable file to compress
+    # required: true
+    file: ''
 ```
 
 ## Scenarios
 
-### Invalidate entire distribution
+### Compress executable using default settings
 
 ```yml
-- uses: clowdhaus/aws-github-actions/packages/cloudfront_invalidate@v0.2
+- uses: clowdhaus/compress@v0.1
   with:
-    distribution-id: E323PSTTFMI4A7
+    file: myExecutable.exe
 ```
 
-### Invalidate multiple paths
+### Compress executable with highest level of compression with verbose output
 
 ```yml
-- uses: clowdhaus/aws-github-actions/packages/cloudfront_invalidate@v0.2
+- uses: clowdhaus/compress@v0.1
   with:
-    distribution-id: E323PSTTFMI4A7
-    paths: |
-    /index.html
-    /error.http
-    /dist/*
+    commands: -9
+    options: -v
+    file: myExecutable.exe
+```
+
+### Compress executable leaving original file untouched and generating a new, compressed file
+
+```yml
+- uses: clowdhaus/compress@v0.1
+  with:
+    options: -o newExecutable.exe
+    file: some/path/myExecutable.exe
 ```
 
 ## Getting Started
-
-This project is setup as a monorepo using [lerna](https://github.com/lerna/lerna) and [yarn](https://github.com/yarnpkg/yarn) workspaces. If you are unfamiliar with these tools or the practice of a monorepo, I would suggest taking a look at the following articles (I am certain there are many more, but these seemed complete and worthy of a mention):
-
-- [Create a Monorepo with Lerna & Yarn Workspaces](https://medium.com/hy-vee-engineering/creating-a-monorepo-with-lerna-yarn-workspaces-cf163908965d)
-- [Why Lerna and Yarn Workspaces is a Perfect Match for Building Mono-Repos – A Close Look at Features and Performance](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/)
 
 The following instructions will help you get setup for development and testing purposes.
 
@@ -75,25 +87,11 @@ The following instructions will help you get setup for development and testing p
 
 See [here](https://yarnpkg.com/en/docs/install#debian-stable) for instructions on installing yarn on your local machine.
 
-#### [lerna](https://github.com/lerna/lerna)
-
-`lerna` is used to managed the project as a monorepo - where each action is packaged and managed individually, and some packages are internal modules shared across the actions.
-
-To install lernal locally on your machine, it is recommended to install globally via npm or yarn:
-
-```bash
-$ npm install lerna --globally
-  -- or --
-$ yarn global add lerna
-```
-
-Once you have installed both `yarn` and `lerna`, you can install the project dependencies by running the following command from within the project root directory:
+Once you have installed `yarn`, you can install the project dependencies by running the following command from within the project root directory:
 
 ```bash
   $ yarn
 ```
-
-Note: You may come across the comand sequence `lerna bootstrap` in the `lerna` documentation; this is equivalent to running `yarn` where both commands will pull down the necesary dependencies for the project and its packages.
 
 ## Contributing
 

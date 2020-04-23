@@ -1,28 +1,26 @@
 name: test
 
 on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - run: |
-          yarn
-          yarn run all
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
 
-      - uses: ./
+      - name: Install dependencies
+        run: yarn
 
+      - name: Static tests
+        run: yarn run all

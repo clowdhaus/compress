@@ -7,7 +7,7 @@ async function run(): Promise<void> {
   try {
     const commands = stringArgv(core.getInput('commands', {required: false}).trim())
     const options = stringArgv(core.getInput('options', {required: false}).trim())
-    const file = stringArgv(core.getInput('file', {required: true}).trim())
+    const file = core.getInput('file', {required: true}).trim()
 
     const upx = await Upx.getOrInstall()
     // upx [-123456789dlthVL] [-qvfk] [-o file] file..
